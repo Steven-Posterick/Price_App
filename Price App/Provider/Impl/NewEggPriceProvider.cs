@@ -1,6 +1,13 @@
-﻿namespace Price_App.Provider;
+﻿using System.Threading.Tasks;
+using Price_App.Model;
 
-public class NewEggPriceProvider
+namespace Price_App.Provider.Impl;
+
+public interface INewEggPriceProvider : IPriceProvider { }
+public class NewEggPriceProvider : INewEggPriceProvider
 {
-    
+    public Task<PricedItem> GetPricedItems(string modelId)
+    {
+        throw new System.NotImplementedException();
+    }
 }

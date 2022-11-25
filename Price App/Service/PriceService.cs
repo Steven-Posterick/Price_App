@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Price_App.Model;
+using Price_App.Provider;
+using Price_App.Provider.Impl;
 
 namespace Price_App.Service;
 
@@ -18,14 +20,26 @@ public interface IPriceService {
 
 public class PriceService : IPriceService
 {
-    public Task<List<ScrapedItem>> GetScrapedItems(string description)
+    private readonly IItemScraper _itemScraper;
+    private readonly List<IPriceProvider> _priceProviders;
+    public PriceService(
+        IBestBuyProvider bestBuyProvider,
+        // ReSharper disable once SuggestBaseTypeForParameterInConstructor
+        IGameStopPriceProvider gameStopPriceProvider,
+        // ReSharper disable once SuggestBaseTypeForParameterInConstructor
+        INewEggPriceProvider newEggPriceProvider)
     {
-        return Task.FromResult(new List<ScrapedItem>()
+        _priceProviders = new List<IPriceProvider>
         {
-            new ScrapedItem("GPU 1.0", "This is GPU 1 without a cooler"),
-            new ScrapedItem("GPU 1.1", "This is GPU 1 with a cooler")
-        });
+            bestBuyProvider,
+            gameStopPriceProvider,
+            newEggPriceProvider
+        };
+        
+        _itemScraper = bestBuyProvider;
     }
+
+    public Task<List<ScrapedItem>> GetScrapedItems(string description) => _itemScraper.GetScrapedItems(description);
 
     public Task<List<PricedItem>> GetPricedItems(ScrapedItem scrapedItem)
     {

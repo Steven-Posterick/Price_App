@@ -1,8 +1,11 @@
 ﻿using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Price_App.Provider;
+using Price_App.Provider.Impl;
 using Price_App.Service;
 using Price_App.ViewModel;
+using Price_App.Window;
 
 namespace Price_App
 {
@@ -22,6 +25,9 @@ namespace Price_App
                     services.AddSingleton<PriceWindow>();
                     services.AddSingleton<PriceViewModel>();
                     services.AddSingleton<IPriceService, PriceService>();
+                    services.AddSingleton<IBestBuyProvider, BestBuyProvider>();
+                    services.AddSingleton<IGameStopPriceProvider, GameStopPriceProvider>();
+                    services.AddSingleton<INewEggPriceProvider, NewEggPriceProvider>();
                 })
                 .Build();
         }

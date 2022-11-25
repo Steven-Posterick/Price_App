@@ -1,6 +1,13 @@
-﻿namespace Price_App.Provider;
+﻿using System.Threading.Tasks;
+using Price_App.Model;
 
-public class GameStopPriceProvider
+namespace Price_App.Provider;
+
+public interface IGameStopPriceProvider : IPriceProvider {}
+public class GameStopPriceProvider : IGameStopPriceProvider
 {
-    
+    public Task<PricedItem> GetPricedItems(string modelId)
+    {
+        throw new System.NotImplementedException();
+    }
 }

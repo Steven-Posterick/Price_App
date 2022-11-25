@@ -6,7 +6,7 @@ using System.Windows.Input;
 
 namespace Price_App.Helper;
 
-public class CommandHelper
+public static class CommandHelper
 {
     private static readonly SemaphoreSlim CommandLock = new(1);
     public static AsyncCommand CreateAsyncCommand(Func<Task> taskFunc) => new(CommandLock, taskFunc);
