@@ -23,7 +23,7 @@ public class PriceViewModel
     {
         // TODO: Add Search functionality 
         MessageBox.Show("Searching...");
-        var scrapedItems = await _priceService.GetScrapedItems("Some Description");
+        var scrapedItems = await _priceService.GetScrapedItems("Intel I7 CPU");
         // Show results
         
     }

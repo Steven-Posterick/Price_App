@@ -1,19 +1,63 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
+using HtmlAgilityPack;
 using Price_App.Model;
 
 namespace Price_App.Provider.Impl;
 
 public interface IBestBuyProvider : IItemScraper, IPriceProvider { }
-public class BestBuyProvider : IBestBuyProvider
+public class BestBuyProvider : HtmlWebProvider, IBestBuyProvider
 {
-    public Task<List<ScrapedItem>> GetScrapedItems(string description)
+    private const string BestBuySearchUrl = "https://www.bestbuy.com/site/searchpage.jsp?st=";
+
+    private static string GetSearchUrl(string searchTerm) => $"{BestBuySearchUrl}{HttpUtility.HtmlEncode(searchTerm)}"; 
+    
+    public async Task<List<ScrapedItem>> GetScrapedItems(string description)
     {
-        return Task.FromResult(new List<ScrapedItem>()
+        var url = GetSearchUrl(description);
+        var documentTask = LoadDocument(url);
+
+        var document = await documentTask;
+
+        var scrapedItems = document.DocumentNode
+            .Descendants()
+            .Where(x => x.HasClass("information"))
+            .Select(TransformNode);
+
+        ScrapedItem TransformNode(HtmlNode node)
         {
-            new ScrapedItem("GPU 1.0", "This is GPU 1 without a cooler"),
-            new ScrapedItem("GPU 1.1", "This is GPU 1 with a cooler")
-        });
+            var modelId = GetModelId(node);
+            var itemDescription = GetDescription(node);
+            var item = new ScrapedItem(modelId, itemDescription);
+            return item;
+        }
+
+        string GetDescription(HtmlNode node)
+        {
+            var itemDescription = node.Descendants()
+                .Where(x => x.HasClass("sku-title"))
+                .SelectMany(x=> x.Descendants())
+                .FirstOrDefault()?.InnerHtml ?? "";
+
+            return itemDescription;
+        }
+
+        string GetModelId(HtmlNode node)
+        {
+            return node
+                .Descendants()
+                .Where(x=> x.HasClass("variation-info"))
+                .SelectMany(x=> x.Descendants())
+                .Where(x=> x.HasClass("sku-model"))
+                .SelectMany(x=> x.Descendants())
+                .Where(x=> x.HasClass("sku-attribute-title"))
+                .SelectMany(x=> x.Descendants())
+                .FirstOrDefault(x => x.HasClass("sku-value"))?.InnerText ?? "";
+        }
+
+        return scrapedItems.ToList();
     }
 
     public Task<PricedItem> GetPricedItems(string modelId)
