@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Price_App.Model;
 
-namespace Price_App.Provider;
+namespace Price_App.Provider.Impl;
 
 public interface IGameStopPriceProvider : IPriceProvider {}
 public class GameStopPriceProvider : IGameStopPriceProvider

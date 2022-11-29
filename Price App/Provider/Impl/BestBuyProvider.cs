@@ -60,8 +60,32 @@ public class BestBuyProvider : HtmlWebProvider, IBestBuyProvider
         return scrapedItems.ToList();
     }
 
-    public Task<PricedItem> GetPricedItems(string modelId)
+    public async Task<PricedItem> GetPricedItems(string modelId)
     {
-        throw new System.NotImplementedException();
+        var url = GetSearchUrl(modelId);
+        var documentTask = LoadDocument(url);
+
+        var document = await documentTask;
+
+        var priceText = document.DocumentNode
+            .Descendants()
+            .Where(x => x.HasClass("price-block"))
+            .Select(FindDescendentFirst)
+            .FirstOrDefault(x => x != null)?.InnerHtml ?? "";
+
+        priceText = priceText.Replace("$", "");
+
+        decimal? price = null;
+        if (decimal.TryParse(priceText, out var priceDecimal)) price = priceDecimal;
+
+
+        HtmlNode? FindDescendentFirst(HtmlNode? node)
+        {
+            if (node == null) return null;
+
+            return node.Name == "span" ? node : FindDescendentFirst(node.Descendants().FirstOrDefault(x => x.Name != "link"));
+        }
+
+        return new PricedItem("BestBuy", price);
     }
 }
