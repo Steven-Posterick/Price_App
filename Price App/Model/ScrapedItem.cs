@@ -12,7 +12,7 @@ public class ScrapedItem
 
     public string ModelId { get; set; }
     public string Description { get; set; }
-    public ObservableCollection<PricedItem> PricedItems { get; } = new();
+    //public ObservableCollection<PricedItem> PricedItems { get; } = new();
 
     public override string ToString()
     {
