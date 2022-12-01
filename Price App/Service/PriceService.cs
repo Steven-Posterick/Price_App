@@ -46,14 +46,14 @@ public class PriceService : IPriceService
         return Task.FromResult(
             scrapedItem.ModelId == "GPU 1.0" ? new List<PricedItem>()
             {
-                new PricedItem("Best Buy", 300),
-                new PricedItem("Gamestop", 250),
-                new PricedItem("New Egg", null)
+                new PricedItem("Best Buy", 300, ""),
+                new PricedItem("Gamestop", 250, ""),
+                new PricedItem("New Egg", null, "")
             } : new List<PricedItem>()
             {
-                new PricedItem("Best Buy", 320),
-                new PricedItem("Gamestop", 310),
-                new PricedItem("New Egg", 330)
+                new PricedItem("Best Buy", 320, ""),
+                new PricedItem("Gamestop", 310, ""),
+                new PricedItem("New Egg", 330, "")
             });
     }
 }
