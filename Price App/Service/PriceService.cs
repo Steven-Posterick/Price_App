@@ -25,14 +25,14 @@ public class PriceService : IPriceService
     public PriceService(
         IBestBuyProvider bestBuyProvider,
         // ReSharper disable once SuggestBaseTypeForParameterInConstructor
-        IGameStopPriceProvider gameStopPriceProvider,
+        IMicroCenterPriceProvider microCenterPriceProvider,
         // ReSharper disable once SuggestBaseTypeForParameterInConstructor
         INewEggPriceProvider newEggPriceProvider)
     {
         _priceProviders = new List<IPriceProvider>
         {
             bestBuyProvider,
-            gameStopPriceProvider,
+            microCenterPriceProvider,
             newEggPriceProvider
         };
         

@@ -26,7 +26,7 @@ namespace Price_App
                     services.AddSingleton<PriceViewModel>();
                     services.AddSingleton<IPriceService, PriceService>();
                     services.AddSingleton<IBestBuyProvider, BestBuyProvider>();
-                    services.AddSingleton<IGameStopPriceProvider, GameStopPriceProvider>();
+                    services.AddSingleton<IMicroCenterPriceProvider, MicroCenterPriceProvider>();
                     services.AddSingleton<INewEggPriceProvider, NewEggPriceProvider>();
                 })
                 .Build();

@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using System.Windows.Documents;
 using HtmlAgilityPack;
 using Price_App.Model;
 
@@ -86,6 +87,18 @@ public class BestBuyProvider : HtmlWebProvider, IBestBuyProvider
             return node.Name == "span" ? node : FindDescendentFirst(node.Descendants().FirstOrDefault(x => x.Name != "link"));
         }
 
-        return new PricedItem("BestBuy", price, "");
+        var websites = document.DocumentNode
+            .Descendants()
+            .Where(x => x.HasClass("information"))
+            .SelectMany(x=> x.Descendants())
+            .Where(x=> x.HasClass("sku-title"))
+            .SelectMany(x=> x.Descendants())
+            .Where(x => x.Attributes["href"] != null)
+            .Select(x => x.Attributes["href"].Value)
+            .ToList();
+
+        var websiteUrl = websites.Count == 0 ? "" : $"https://bestbuy.com{websites.First()}";
+
+        return new PricedItem("Best Buy", price, websiteUrl);
     }
 }
