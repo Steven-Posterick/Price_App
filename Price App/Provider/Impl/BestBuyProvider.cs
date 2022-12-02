@@ -86,6 +86,6 @@ public class BestBuyProvider : HtmlWebProvider, IBestBuyProvider
             return node.Name == "span" ? node : FindDescendentFirst(node.Descendants().FirstOrDefault(x => x.Name != "link"));
         }
 
-        return new PricedItem("BestBuy", price);
+        return new PricedItem("BestBuy", price, "");
     }
 }
