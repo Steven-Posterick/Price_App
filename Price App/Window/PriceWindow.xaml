@@ -7,11 +7,44 @@
         xmlns:viewModel="clr-namespace:Price_App.ViewModel"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance viewModel:PriceViewModel}"
-        Title="Price Application" Height="450" Width="800">
-    <Grid>
-        <Button Content="Search" 
-                Width="50"
-                Height="20"
-                Command="{Binding SearchWebsiteCommand}"/>
-    </Grid>
+        Title="Price Application" Height="500" Width="800">
+ 
+    <DockPanel LastChildFill="True">
+        <StackPanel DockPanel.Dock="Left">
+            <Label Content="Search Best Buy Products:"
+                   Margin="30,20,30,0"/>
+            <TextBox Text="Textbox"
+                     Margin="30,0,30,20"/>
+            <Button Content="Search" 
+                    Margin="30,0,30,0"
+                    Width="200"
+                    Height="20"
+                    Command="{Binding SearchWebsiteCommand}"/>
+            <Label Content="Results:"
+                   Margin="30,20,30,0"/>
+            <ListBox Height="280" 
+                     Margin="30,0,30,0"
+                     d:ItemsSource="{d:SampleData ItemCount=5}"/>
+ 
+        </StackPanel>
+ 
+ 
+        <StackPanel DockPanel.Dock="Right">
+            <Label Content="Selected Part Number:"
+                   Margin="30,20,30,0"/>
+            <TextBox Text="Textbox"
+                     Margin="30,0,360,0"/>
+            <Label Content="Sorting:"
+                   Margin="30,10,30,0"/>
+            <ComboBox Width="120"
+                      Margin="0,0,360,0"/>
+            <Label Content="Showing Results From 0 Sites"
+                   Margin="350,0,10,0"/>
+            <DataGrid Height="282" 
+                      Margin="30,0,30,0"
+                      d:ItemsSource="{d:SampleData ItemCount=5}"/>
+ 
+        </StackPanel>
+ 
+    </DockPanel>
 </Window>
