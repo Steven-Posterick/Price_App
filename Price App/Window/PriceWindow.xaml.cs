@@ -9,8 +9,8 @@ namespace Price_App.Window
     {
         public PriceWindow(PriceViewModel priceViewModel)
         {
-            InitializeComponent();
             DataContext = priceViewModel;
+            InitializeComponent();
         }
     }
 }

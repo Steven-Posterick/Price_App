@@ -1,8 +1,11 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using Price_App.Helper;
 using Price_App.Model;
@@ -27,22 +30,27 @@ public class PriceViewModel : INotifyPropertyChanged
     }
 
     public ICommand SearchWebsiteCommand => CommandHelper.CreateAsyncCommand(OnSearchWebsite);
-    public ICommand SelectItemCommand => CommandHelper.CreateAsyncCommand<ScrapedItem>(OnSelectItem);
+    public ICommand SelectItemCommand => CommandHelper.CreateAsyncCommand(OnSelectItem);
 
-    public ObservableCollection<ScrapedItem> ScrapedItems { get; } = new ObservableCollection<ScrapedItem>();
+    public ICommand OpenUrlCommand => CommandHelper.CreateAsyncCommand<PricedItem>(OnURLOpen);
 
-    public ObservableCollection<PricedItem> PricedItems { get; } = new ObservableCollection<PricedItem>();
+    public ObservableCollection<ScrapedItem> ScrapedItems { get; } = new();
 
-    private string _description;
+    public ObservableCollection<PricedItem> PricedItems { get; } = new();
+
+    private string _description = "";
     public string Description
     {
         get => _description;
         set
         {
             _description = value;
-            OnPropertyChanged(nameof(Description));
+            OnPropertyChanged();
         }
     }
+
+    public ScrapedItem? SelectedScrapedItem { get; set; }
+    public ComboBoxItem SelectedSortingMethod { get; set; }
 
     private async Task OnSearchWebsite()
     {
@@ -52,17 +60,39 @@ public class PriceViewModel : INotifyPropertyChanged
         var scrapedItems = await _priceService.GetScrapedItems(Description);
         // Show results
 
-        scrapedItems.ForEach(x => ScrapedItems.Add(x));
+        foreach (var x in scrapedItems)
+            ScrapedItems.Add(x);
+        
     }
 
-    private async Task OnSelectItem(ScrapedItem item)
+    private async Task OnSelectItem()
     {
-        // TODO: Add Population when an item is selected.
+        if (SelectedScrapedItem == null) return;
+        
         PricedItems.Clear();
-        var pricedItems = await _priceService.GetPricedItems(item);
+        var pricedItems = await _priceService.GetPricedItems(SelectedScrapedItem);
+
+        switch (SelectedSortingMethod.Content)
+        {
+            case "Provider":
+                pricedItems = pricedItems.OrderBy(x => x.Provider).ToList();
+                break;
+            case "Price":
+                pricedItems = pricedItems.OrderBy(x => x.Price ?? decimal.MaxValue).ToList();
+                break;
+        }
         
         pricedItems.ForEach(x => PricedItems.Add(x));
-
+    }
+    
+    private static Task OnURLOpen(PricedItem item)
+    {
+        if (string.IsNullOrEmpty(item.WebSiteUrl)) return Task.CompletedTask;
         
+        var psi = new ProcessStartInfo { FileName = item.WebSiteUrl, UseShellExecute = true };
+        
+        Process.Start(psi);
+        
+        return Task.CompletedTask;
     }
 }

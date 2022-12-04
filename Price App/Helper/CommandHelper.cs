@@ -32,6 +32,7 @@ public class AsyncCommand : ICommand
         try
         {
             if (!await _semaphoreSlim.WaitAsync(50)) return;
+            Mouse.OverrideCursor = Cursors.Wait;
             
             await _execute();
         }
@@ -41,6 +42,7 @@ public class AsyncCommand : ICommand
         } 
         finally
         {
+            Mouse.OverrideCursor = null;
             _semaphoreSlim.Release();
         }
         
