@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Price_App.Model;
 using Price_App.Provider;
@@ -33,7 +34,7 @@ public class PriceService : IPriceService
         {
             bestBuyProvider,
             microCenterPriceProvider,
-            newEggPriceProvider
+            //newEggPriceProvider
         };
         
         _itemScraper = bestBuyProvider;
@@ -41,19 +42,12 @@ public class PriceService : IPriceService
 
     public Task<List<ScrapedItem>> GetScrapedItems(string description) => _itemScraper.GetScrapedItems(description);
 
-    public Task<List<PricedItem>> GetPricedItems(ScrapedItem scrapedItem)
+    public async Task<List<PricedItem>> GetPricedItems(ScrapedItem scrapedItem)
     {
-        return Task.FromResult(
-            scrapedItem.ModelId == "GPU 1.0" ? new List<PricedItem>()
-            {
-                new PricedItem("Best Buy", 300, ""),
-                new PricedItem("Gamestop", 250, ""),
-                new PricedItem("New Egg", null, "")
-            } : new List<PricedItem>()
-            {
-                new PricedItem("Best Buy", 320, ""),
-                new PricedItem("Gamestop", 310, ""),
-                new PricedItem("New Egg", 330, "")
-            });
+        var tasks = _priceProviders.Select(x => x.GetPricedItems(scrapedItem.ModelId)).ToList();
+
+        await Task.WhenAll(tasks);
+
+        return tasks.Select(x => x.Result).ToList();
     }
 }
