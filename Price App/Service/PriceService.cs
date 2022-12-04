@@ -34,7 +34,7 @@ public class PriceService : IPriceService
         {
             bestBuyProvider,
             microCenterPriceProvider,
-            //newEggPriceProvider
+            newEggPriceProvider
         };
         
         _itemScraper = bestBuyProvider;
