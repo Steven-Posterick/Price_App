@@ -72,6 +72,8 @@ public class PriceViewModel : INotifyPropertyChanged
         PricedItems.Clear();
         var pricedItems = await _priceService.GetPricedItems(SelectedScrapedItem);
 
+        
+
         switch (SelectedSortingMethod.Content)
         {
             case "Provider":
@@ -82,7 +84,11 @@ public class PriceViewModel : INotifyPropertyChanged
                 break;
         }
         
-        pricedItems.ForEach(x => PricedItems.Add(x));
+        pricedItems.ForEach(x => 
+            {
+                if(x.Price != null)
+                    PricedItems.Add(x);
+            });
     }
     
     private static Task OnURLOpen(PricedItem item)
