@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using System.Windows.Documents;
 using HtmlAgilityPack;
 using Price_App.Model;
 
@@ -17,19 +18,17 @@ public class NewEggPriceProvider : HtmlWebProvider, INewEggPriceProvider
     {
         string url = $"{newEggUrl}{HttpUtility.HtmlEncode(modelId)}";
         var document = await LoadDocument(url);
-
-        var priceText = document.DocumentNode
-          .Descendants()
-            .Where(x => x.HasClass("price"))
-            .Select(FindDescendentFirst)
-            .FirstOrDefault(x => x != null)?.InnerHtml ?? "";
-
-        HtmlNode? FindDescendentFirst(HtmlNode? node)
-        {
-            if (node == null) return null;
-
-            return node.Name == "span" ? node : FindDescendentFirst(node.Descendants().FirstOrDefault(x => x.Name != "link"));
-        }
+        
+        var priceText = string.Join("", new List<HtmlNode?>
+            {
+                document.DocumentNode
+                    .Descendants()
+                    .Where(x => x.HasClass("price"))
+                    .SelectMany(x => x.Descendants())
+                    .FirstOrDefault(x => x.HasClass("price-current"))
+            }.Where(x=> x != null)
+            .SelectMany(x => x!.Descendants())
+            .Where(x => x.Name is "strong" or "sup").Select(x => x.InnerText ?? ""));
 
         decimal? price = null;
         if (decimal.TryParse(priceText.Replace("$", ""), out var priceDecimal))
